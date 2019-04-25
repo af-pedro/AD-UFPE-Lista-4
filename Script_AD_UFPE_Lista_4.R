@@ -35,4 +35,3 @@ head(matricula_pe_selecao)
 
 
 #### QUESTAO 3 ####
-#### QUESTAO 4 ####
