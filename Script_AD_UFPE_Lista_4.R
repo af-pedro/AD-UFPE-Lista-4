@@ -33,5 +33,13 @@ matricula_pe_selecao <- matricula_pe%>% filter(NU_IDADE > 1 , NU_IDADE < 25)
 dim(matricula_pe_selecao)
 head(matricula_pe_selecao)
 
+## 4.
+
+
+## 5.
+
+## 6.
+
+## 7.
 
 #### QUESTAO 3 ####
