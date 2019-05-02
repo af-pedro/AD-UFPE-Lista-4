@@ -3,19 +3,29 @@
 
 ## 1.
 
-install.packages("readxl")
-library(readxl)
-install.packages("dplyr")
-library(dplyr)
+if(require(tidyverse) == F) install.packages('tidyverse'); require(tidyverse)
+if(require(readxl) == F) install.packages('readxl'); require(readxl)
 
+# definindo diretório e carregando dados
 setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontro_2_ufpe/dados_encontro_2_ufpe")
-Atlas_2013 <- read_xlsx("atlas2013_dadosbrutos_pt.xlsx")
+Atlas_2013 <- read_xlsx("atlas2013_dadosbrutos_pt.xlsx", sheet = 2)
 
 head(Atlas_2013)
-print(Atlas_2013)
-summary(Atlas_2013)
-dim(Atlas_2013)
-str(docentes_pe)
+unique(Atlas_2013$ANO)
+
+# definindo diretório e carregando dados
+setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontro_2_ufpe/dados_encontro_2_ufpe")
+
+load("matricula_pe_censo_escolar_2016.RData")
+load("docentes_pe_censo_escolar_2016.RData")
+load("turmas_pe_censo_escolar_2016.RData")
+load("escolas_pe_censo_escolar_2016.RData")
+
+# selecionando dados de 2010 e do Estado de Pernambuco
+pnud_pe_2010 <- Atlas_2013 %>% filter(ANO == 2010 & UF == 26)
+
+# removendo base
+rm(Atlas_2013) 
 
 ## 2.
 
