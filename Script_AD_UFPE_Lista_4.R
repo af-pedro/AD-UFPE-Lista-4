@@ -93,6 +93,36 @@ docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes
 library(ggplot2)
 ggplot(docentes_matriculas_pe_sel, aes(n_matriculas, n_docentes)) + geom_point()
 
+# Mediana
+median(docentes_matriculas_pe_sel$CO_MUNICIPIO)
+
+  # Moda
+y <- c(sample(1:10, 100, replace = T))
+table(y)
+table(y)[which.max(table(y))]
+
+  # Quantis
+summary(docentes_matriculas_pe_sel$CO_MUNICIPIO)
+
+  # Percentis / Decis...
+quantile(docentes_matriculas_pe_sel$CO_MUNICIPIO, probs = seq(0,1, .01))
+
+## e.
+
+sort(docentes_matriculas_pe_sel$IDHM)
+
+## f.
+
+  # criando variável profit
+ alunosdocente <-  docentes_matriculas_pe_sel%>% mutate(profit = n_matriculas / n_docentes)
+
+  # correlacao
+cor(alunosdocente$IDHM, movies$profit) 
+
+  # teste de correlacao
+cor.test(alunosdocente$IDHM, movies$profit) # p-valor < .00000000000000022
+
+## g.
 
 ## 5.
 
