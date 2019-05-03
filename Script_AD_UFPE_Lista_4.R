@@ -94,7 +94,7 @@ library(ggplot2)
 ggplot(docentes_matriculas_pe_sel, aes(n_matriculas, n_docentes)) + geom_point()
 
 # Mediana
-median(docentes_matriculas_pe_sel$CO_MUNICIPIO)
+median(docentes_matriculas_pe_sel$n_matriculas/median(docentes_matriculas_pe_sel$n_docentes))
 
   # Moda
 y <- c(sample(1:10, 100, replace = T))
@@ -117,10 +117,10 @@ sort(docentes_matriculas_pe_sel$IDHM)
  alunosdocente <-  docentes_matriculas_pe_sel%>% mutate(profit = n_matriculas / n_docentes)
 
   # correlacao
-cor(alunosdocente$IDHM, movies$profit) 
+cor(alunosdocente$IDHM, alunosdocente$profit) 
 
   # teste de correlacao
-cor.test(alunosdocente$IDHM, movies$profit) # p-valor < .00000000000000022
+cor.test(alunosdocente$IDHM, alunosdocente$profit) # p-valor < .00000000000000022
 
 ## g.
 
