@@ -1,19 +1,17 @@
 #### QUESTAO 1 ####
-#### QUESTAO 2 ####
-
-## 1.
+## a.
 
 if(require(tidyverse) == F) install.packages('tidyverse'); require(tidyverse)
 if(require(readxl) == F) install.packages('readxl'); require(readxl)
 
-# definindo diretório e carregando dados
+  # definindo diretório e carregando dados
 setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontro_2_ufpe/dados_encontro_2_ufpe")
 Atlas_2013 <- read_xlsx("atlas2013_dadosbrutos_pt.xlsx", sheet = 2)
 
 head(Atlas_2013)
 unique(Atlas_2013$ANO)
 
-# definindo diretório e carregando dados
+  # definindo diretório e carregando dados
 setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontro_2_ufpe/dados_encontro_2_ufpe")
 
 load("matricula_pe_censo_escolar_2016.RData")
@@ -21,13 +19,13 @@ load("docentes_pe_censo_escolar_2016.RData")
 load("turmas_pe_censo_escolar_2016.RData")
 load("escolas_pe_censo_escolar_2016.RData")
 
-# selecionando dados de 2010 e do Estado de Pernambuco
+  # selecionando dados de 2010 e do Estado de Pernambuco
 pnud_pe_2010 <- Atlas_2013 %>% filter(ANO == 2010 & UF == 26)
 
-# removendo base
+  # removendo base
 rm(Atlas_2013) 
 
-## 2.
+## b.
 
 load("docentes_pe_censo_escolar_2016.RData")
 names(docentes_pe)
@@ -36,7 +34,7 @@ dim(docentes_pe_selecao)
 head(docentes_pe_selecao)
 summary(docentes_pe_selecao$NU_IDADE)
 
-## 3.
+## c.
 
 load("matricula_pe_censo_escolar_2016.RData")
 names(matricula_pe)
@@ -45,10 +43,10 @@ dim(matricula_pe_selecao)
 head(matricula_pe_selecao)
 summary(matricula_pe_selecao$NU_IDADE)
 
-## 4.
+## d.
 
-# Matriculas
-matriculas_pe_sel <- matricula_pe %>% group_by(CO_MUNICIPIO) %>%
+  # Matriculas
+matriculas_pe_sel <- matricula_pe_selecao %>% group_by(CO_MUNICIPIO) %>%
   summarise(n_matriculas = n(),
             alunos_media_idade = mean(NU_IDADE),
             alunos_fem_sx = sum(TP_SEXO == 2, na.rm = T),
@@ -60,12 +58,12 @@ matriculas_pe_sel <- matricula_pe %>% group_by(CO_MUNICIPIO) %>%
             matriculas_educ_medio = sum(TP_ETAPA_ENSINO %in% c(25:38), na.rm = T)
   )
 
-# verificacao
+  # verificacao
 dim(matriculas_pe_sel)[1] == length(unique(matricula_pe$CO_MUNICIPIO))
 summary(matriculas_pe_sel)
 
-# Docentes
-docentes_pe_sel <- docentes_pe %>% group_by(CO_MUNICIPIO) %>%
+  # Docentes
+docentes_pe_sel <- docentes_pe_selecao %>% group_by(CO_MUNICIPIO) %>%
   summarise(n_docentes = n(),
             docentes_media_idade = mean(NU_IDADE),
             docentes_fem_sx = sum(TP_SEXO == 2, na.rm = T),
@@ -73,11 +71,11 @@ docentes_pe_sel <- docentes_pe %>% group_by(CO_MUNICIPIO) %>%
             docentes_contrato = sum(TP_TIPO_CONTRATACAO %in% c(1, 4), na.rm = T)
   )
 
-# verificacao
+  # verificacao
 dim(docentes_pe_sel)[1] == length(unique(docentes_pe$CO_MUNICIPIO))
 summary(docentes_pe_sel)
 
-# matriculas
+  # matriculas
 docentes_matriculas_pe_sel <- docentes_pe_sel %>% full_join(matriculas_pe_sel,
                                                 by = c("CO_MUNICIPIO" = "CO_MUNICIPIO")
 )
@@ -86,48 +84,80 @@ dim(matriculas_pe_sel)
 dim(docentes_matriculas_pe_sel)
 names(docentes_matriculas_pe_sel)
 
-# Média Aritmética / Proporção de docentes 
+  # Média Aritmética / Proporção de docentes 
 docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes
 
-# Grafico
+  # Grafico
 library(ggplot2)
 ggplot(docentes_matriculas_pe_sel, aes(n_matriculas, n_docentes)) + geom_point()
 
-# Mediana
+  # Mediana
 median(docentes_matriculas_pe_sel$n_matriculas/median(docentes_matriculas_pe_sel$n_docentes))
-
-  # Moda
-y <- c(sample(1:10, 100, replace = T))
-table(y)
-table(y)[which.max(table(y))]
-
-  # Quantis
-summary(docentes_matriculas_pe_sel$CO_MUNICIPIO)
-
-  # Percentis / Decis...
-quantile(docentes_matriculas_pe_sel$CO_MUNICIPIO, probs = seq(0,1, .01))
 
 ## e.
 
-sort(docentes_matriculas_pe_sel$IDHM)
+  # Criando nova tabela de dados com IDHM e Matriculas e Docentes
+censo_pnud_pe_sel <- docentes_matriculas_pe_sel %>% full_join(pnud_pe_2010,
+                                                by = c( "CO_MUNICIPIO" = "Codmun7")
+)
+
+dim(pnud_pe_2010)
+dim(matriculas_pe_sel)
+dim(censo_pnud_pe_sel)
+names(censo_pnud_pe_sel)
+
+  # Juntando base de dados do PNUD e Alunos por docente
+
+censo_pnud_pe_sel <-pnud_pe_2010%>%full_join(matriculas_pe_sel,by =c("IDHM"="CO_MUNICIPIO"))
+
+  # Identificando a maior média
+summary(docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes)
+
+  # Analisando o código da maior média
+docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes
+
+  # Analisando o que há na linha 177 (de maior média)
+censo_pnud_pe_sel["177", ]
+
+  # O código 177 (de maior média) é Tupatininga que tem como IDHM o valor de 0.519
 
 ## f.
 
-  # criando variável profit
- alunosdocente <-  docentes_matriculas_pe_sel%>% mutate(profit = n_matriculas / n_docentes)
+  # Identificando a maior media
+summary(docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes)
+
+  # salvando nova base
+DocAlu <- (docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes)
+save(DocAlu, file = "DocAlu.RData")
+write.csv2(DocAlu, file = "DocAlu.csv",
+           row.names = F)
+
+  # Carregando base de dados 
+setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontro_2_ufpe/dados_encontro_2_ufpe")
+load("DocAlu.RData")
+
+  # Fazendo mutate
+censo_pnud_pe_sel_docalu <- censo_pnud_pe_sel %>%  mutate(DocAlu)
+names(censo_pnud_pe_sel_docalu)
 
   # correlacao
-cor(alunosdocente$IDHM, alunosdocente$profit) 
+cor(censo_pnud_pe_sel_docalu$IDHM, censo_pnud_pe_sel_docalu$DocAlu)
 
   # teste de correlacao
-cor.test(alunosdocente$IDHM, alunosdocente$profit) # p-valor < .00000000000000022
+cor.test(censo_pnud_pe_sel_docalu$IDHM, censo_pnud_pe_sel_docalu$DocAlu)
+
+  # Grafico
+ggplot(censo_pnud_pe_sel_docalu, aes(IDHM, DocAlu)) + geom_point()
 
 ## g.
 
-## 5.
-
-## 6.
-
-## 7.
+# salvando nova base
+save(censo_pnud_pe_sel_docalu, file = "censo_pnud_pe_sel_docalu.RData")
+write.csv2(censo_pnud_pe_sel_docalu, file = "censo_pnud_pe_sel_docalu.csv",
+           row.names = F)
 
 #### QUESTAO 3 ####
+
+# Grafico
+ggplot(censo_pnud_pe_sel_docalu, aes(IDHM, DocAlu = "Alunos por docente")) + geom_point()
+
