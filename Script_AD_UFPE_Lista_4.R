@@ -29,7 +29,7 @@ rm(Atlas_2013)
 
 load("docentes_pe_censo_escolar_2016.RData")
 names(docentes_pe)
-docentes_pe_selecao <- docentes_pe%>% filter(NU_IDADE > 18, NU_IDADE < 70)
+docentes_pe_selecao <- docentes_pe%>% filter(NU_IDADE > 17, NU_IDADE < 71)
 dim(docentes_pe_selecao)
 head(docentes_pe_selecao)
 summary(docentes_pe_selecao$NU_IDADE)
@@ -38,7 +38,7 @@ summary(docentes_pe_selecao$NU_IDADE)
 
 load("matricula_pe_censo_escolar_2016.RData")
 names(matricula_pe)
-matricula_pe_selecao <- matricula_pe%>% filter(NU_IDADE > 1 , NU_IDADE < 25)
+matricula_pe_selecao <- matricula_pe %>% filter(NU_IDADE > 0 , NU_IDADE < 26)
 dim(matricula_pe_selecao)
 head(matricula_pe_selecao)
 summary(matricula_pe_selecao$NU_IDADE)
@@ -108,7 +108,7 @@ names(censo_pnud_pe_sel)
 
   # Juntando base de dados do PNUD e Alunos por docente
 
-censo_pnud_pe_sel <-pnud_pe_2010%>%full_join(matriculas_pe_sel,by =c("IDHM"="CO_MUNICIPIO"))
+censo_pnud_pe_sel <-pnud_pe_2010%>%full_join(matriculas_pe_sel,by = c("IDHM"="CO_MUNICIPIO"))
 
   # Identificando a maior média
 summary(docentes_matriculas_pe_sel$n_matriculas/docentes_matriculas_pe_sel$n_docentes)
@@ -137,10 +137,10 @@ setwd("C:/Users/Pedro/Desktop/Mestrado/Analise de Dados/Material_R/Dados_encontr
 load("DocAlu.RData")
 
   # Fazendo mutate
-censo_pnud_pe_sel_docalu <- censo_pnud_pe_sel %>%  mutate(DocAlu)
+censo_pnud_pe_sel_docalu <- censo_pnud_pe_sel %>% mutate(DocAlu)
 names(censo_pnud_pe_sel_docalu)
 
-  # correlacao
+  # Correlacao
 cor(censo_pnud_pe_sel_docalu$IDHM, censo_pnud_pe_sel_docalu$DocAlu)
 
   # teste de correlacao
@@ -151,13 +151,13 @@ ggplot(censo_pnud_pe_sel_docalu, aes(IDHM, DocAlu)) + geom_point()
 
 ## g.
 
-# salvando nova base
+  # Salvando nova base
 save(censo_pnud_pe_sel_docalu, file = "censo_pnud_pe_sel_docalu.RData")
 write.csv2(censo_pnud_pe_sel_docalu, file = "censo_pnud_pe_sel_docalu.csv",
            row.names = F)
 
 #### QUESTAO 3 ####
 
-# Grafico
+  # Grafico
 ggplot(censo_pnud_pe_sel_docalu, aes(IDHM, DocAlu = "Alunos por docente")) + geom_point()
 
